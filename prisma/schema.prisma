@@ -8,11 +8,52 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
   password  String
   name      String
+  createdAt DateTime  @default(now())
+  products  Product[]
+  reviews   Review[]
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  price       Int
+  category    String
+  s3Key       String
+  link        String?
+  avgRating   Float     @default(0)
+  reviewCount Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  reviews     Review[]
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  content   String
+  rating    Int
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+// Trigger가 자동으로 INSERT — 애플리케이션 코드에서 직접 쓰지 않음
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  tableName String
+  recordId  Int
+  operation String
+  oldData   Json?
+  newData   Json?
+  changedAt DateTime @default(now())
 }
 
 model Sample {
@@ -20,5 +61,3 @@ model Sample {
   name      String
   createdAt DateTime @default(now())
 }
-
-// TODO: 필요한 모델을 여기에 추가하세요
