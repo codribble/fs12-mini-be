@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sample {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+}
+
+// TODO: 필요한 모델을 여기에 추가하세요
