@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { prisma } from "../lib/prisma";
+import { authRepository } from "./auth.repository";
 
 const ACCESS_TOKEN_EXPIRES = "15m";
 const REFRESH_TOKEN_EXPIRES = "7d";
@@ -17,12 +17,12 @@ export const generateTokens = (userId: number) => {
 
 export const signupUser = async (email: string, password: string, name: string) => {
   const hashed = await bcrypt.hash(password, 10);
-  const user = await prisma.user.create({ data: { email, password: hashed, name } });
+  const user = await authRepository.createUser({ email, password: hashed, name });
   return generateTokens(user.id);
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await authRepository.findByEmail(email);
   if (!user) throw new Error("이메일 또는 비밀번호가 올바르지 않습니다.");
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) throw new Error("이메일 또는 비밀번호가 올바르지 않습니다.");
