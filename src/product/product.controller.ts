@@ -39,6 +39,8 @@ export const postProduct = async (req: AuthRequest, res: Response) => {
 
 export const getProducts = async (req: Request, res: Response) => {
   try {
+    // limit을 undefined로 넘기면 product.service.getProductList의 기본값(DEFAULT_LIMIT)이 적용된다
+    // -> 쿼리스트링이 아예 없는 최초 요청(첫 페이지)도 별도 분기 없이 자연스럽게 처리된다.
     const cursor = req.query.cursor ? Number(req.query.cursor) : undefined;
     const limit = req.query.limit ? Number(req.query.limit) : undefined;
     const category = req.query.category as string | undefined;
