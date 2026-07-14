@@ -11,5 +11,6 @@ router.use("/auth", authRouter);
 router.use("/samples", sampleRouter);
 router.use("/uploads", uploadRouter);
 router.use("/products", productRouter);
+router.use("/products/:productId/reviews", reviewRouter);
 
 export default router;
