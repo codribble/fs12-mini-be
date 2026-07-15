@@ -3,8 +3,18 @@ import { prisma } from "../lib/prisma";
 
 export const reviewRepository = {
   // 특정 상품의 리뷰 목록. 최신 리뷰가 먼저 보이도록 id desc로 정렬한다(별도 페이지네이션 요구사항은 없어서 전체 반환).
+  //
+  // [Phase 9(리뷰 FE) 수정, 사용자 승인] 원래 Phase 7에선 include 없이 Review row만 반환했는데,
+  // Review 모델엔 userId(숫자)만 있고 작성자 이름이 없어서 FE 리뷰 목록에 "누가 썼는지"를 표시할 방법이
+  // 없었다. 리뷰 작성 폼은 로그인한 본인 정보라 문제없지만, 목록은 여러 사용자의 리뷰가 섞여 있어
+  // 이름이 필요했다. 그래서 Phase 9 작업 중 사용자에게 확인받고 이 함수에만 user.name을 include했다.
+  // create/update(아래)는 응답이 "방금 로그인한 내가 쓴/고친 리뷰"라 이름이 필요 없어 일부러 그대로 뒀다.
   findAllByProductId: (productId: Review["productId"]) =>
-    prisma.review.findMany({ where: { productId }, orderBy: { id: "desc" } }),
+    prisma.review.findMany({
+      where: { productId },
+      orderBy: { id: "desc" },
+      include: { user: { select: { name: true } } },
+    }),
 
   // 체크리스트엔 findAllByProductId만 있었지만, PATCH/DELETE 진입 시 "이 리뷰가 존재하는가 + 내가 쓴 리뷰가 맞는가(403)"를
   // 확인하려면 리뷰 하나만 콕 집어 조회하는 함수가 필요하다. product.repository.findById와 product.controller가
