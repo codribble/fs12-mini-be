@@ -1,3 +1,4 @@
+import { Product } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { productRepository } from "./product.repository";
 
@@ -28,12 +29,15 @@ export const getProductById = (id: number) => productRepository.findById(id);
 
 export const updateProductById = (
   id: number,
+  // link만 Product["link"](= string | null)로 파생: 나머지 필드와 달리 link는
+  // "명시적으로 null을 보내 지우는" 시나리오가 있어서(product.repository.ts update 참고),
+  // string으로 좁혀두면 null을 거부하는 타입 오류가 난다.
   data: Partial<{
     name: string;
     price: number;
     category: string;
     s3Key: string;
-    link: string;
+    link: Product["link"];
   }>,
 ) => productRepository.update(id, data);
 
