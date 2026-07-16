@@ -15,7 +15,12 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd ~/fs12-mini-be/be
+            # set -e 없으면 이 스크립트는 중간에 어떤 줄이 실패해도 다음 줄로 계속 넘어간다.
+            # 예전엔 cd 경로가 잘못돼도(git pull도 같이 실패) 마지막 pm2 restart만 성공하면
+            # 전체 워크플로가 "성공"으로 떴다 — 실제로는 배포가 안 됐는데도 몰랐던 원인.
+            # set -e를 넣어서 어느 줄이든 실패하면 그 즉시 중단되고 워크플로가 실패로 뜨게 함.
+            set -e
+            cd ~/be
             git pull
             npm install
             pm2 restart be
