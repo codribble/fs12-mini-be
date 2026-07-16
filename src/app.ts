@@ -7,7 +7,9 @@ import router from "./routes/index";
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+const ALLOWED_ORIGINS = ["http://localhost:3000", "https://fs12-mini-fe.vercel.app"];
+
+app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(router);
